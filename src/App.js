@@ -1,47 +1,57 @@
-import React, { useState } from 'react';
-import Table from "./components/common/Table";
-import Form from './components/common/Form'
+import React from "react";
+import {
+    Link,
+    BrowserRouter as Router,
+    Route,
+    Redirect,
+    Switch,
+} from "react-router-dom";
+import PeoplePage from "./components/pages/PeoplePage";
+import PlanetPage from "./components/pages/PlanetPage";
+import StarshipPage from "./components/pages/StarshipPage";
+import NotFound from "./components/pages/NotFound";
 
-// import './App.css';
-import 'bootstrap/dist/css/bootstrap.css';
-
-const data = [
-    {first: 'Mark', last: 'Otto', handle: '@motto', id: '1'},
-    {first: 'Carl', last: 'Reno', handle: '@ceno', id: '2'},
-    {first: 'Steve', last: 'Smith', handle: '@ssteve', id: '3'}
-]
-
-const columns = Object.keys(data[0]);
+import "./App.css";
+import "bootstrap/dist/css/bootstrap.css";
 
 function App() {
-    const [people, setPeople] = useState(data);
-    console.log(people);
-
-    const handleAppPerson = (personData) => {
-        const data = [...people, personData];
-        setPeople(data)
-    }
-
-    const getInitialPeopleData = () => {
-        return columns.reduce((cols, columnName) => {
-            cols[columnName] = "";
-            return cols;
-        }, {})
-    }
-
     return (
-        <div className="container">
-            <Table
-                data={people}
-                columns={columns}
-                tableDescriptor="People"
-            />
-            <Form
-                initialData={getInitialPeopleData()}
-                columns={columns}
-                onAddData={handleAppPerson}
-            />
-        </div>
+        <Router>
+            <Redirect from="/" to="/people" />
+            <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+                <Link className="navbar-brand" to="/people">
+                    JEDY
+                </Link>
+                <ul className="navbar-nav">
+                    <li className="nav-item">
+                        <Link className="nav-link" to="/people">
+                            People
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link className="nav-link" to="/planets">
+                            Planets
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link className="nav-link" to="/starships">
+                            Starships
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link className="nav-link" to="/notfound">
+                            nonexistent link
+                        </Link>
+                    </li>
+                </ul>
+            </nav>
+            <Switch>
+                <Route exact path="/people" component={PeoplePage} />
+                <Route exact path="/planets" component={PlanetPage} />
+                <Route exact path="/starships" component={StarshipPage} />
+                <Route path="*" component={NotFound} />
+            </Switch>
+        </Router>
     );
 }
 
