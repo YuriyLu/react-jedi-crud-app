@@ -1,49 +1,49 @@
 import React from "react";
 import Button from "./Button";
+import {nanoid} from "nanoid"
 
-const Table = ({ columns, data, tableDescriptor, onDeleteData, tableHeader }) => {
-    const handelClick = (index) => {
-        onDeleteData(index);
+function Table({ columns, tableDescriptor, onDelete, data }) {
+  
+    if (!data) {
+        return <h2>There is no data for {tableDescriptor} page</h2>;
+    }
+
+    const createCell = (item, columnTitle, id) => {
+        return columnTitle.content ? columnTitle.content(item, id) : item[columnTitle.columnName];
     };
 
     return (
-        <div>
-            <h1>{tableHeader}</h1>
-            <table className="table table-dark">
-                <thead>
-                    <tr>
-                        <th scope="col">{tableDescriptor}</th>
-                        {columns.map((columnTitle) => (
-                            <th key={columnTitle} scope="col">
-                                {columnTitle}
-                            </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {data.map((item, index) => (
-
-                        <tr key={item.id}>
-                            <th scope="row">{++index}</th>
-                            {columns.map((columnTitle) => (
-                                <td key={item[columnTitle] + columnTitle}>
-                                    {item[columnTitle]}
-                                </td>
-                            ))}
-                            <td>
-                                <Button
-                                    label="Delete"
-                                    classes="btn btn-danger"
-                                    onClick={() =>
-                                        handelClick(index)
-                                    }
-                                />
-                            </td>
-                        </tr>
+        <table className="table table-dark">
+            <thead>
+                <tr>
+                    <th scope="col">{tableDescriptor}</th>
+                    {columns.map((columnTitle) => (
+                        <th key={nanoid()} scope="col">
+                            {columnTitle.columnName}
+                        </th>
                     ))}
-                </tbody>
-            </table>
-        </div>
+                </tr>
+            </thead>
+            <tbody>
+                {data.map((item, index) => (
+                    <tr key={item.id}>
+                        <th scope="row">{++index}</th>
+                        {columns.map((columnTitle) => (
+                            <td key={nanoid()}>
+                                {createCell(item, columnTitle, item.id)}
+                            </td>
+                        ))}
+                        <td>
+                            <Button
+                                onClick={() => onDelete(item.id)}
+                                classes="btn btn-danger"
+                                label="Delete"
+                            />
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
     );
 }
 
