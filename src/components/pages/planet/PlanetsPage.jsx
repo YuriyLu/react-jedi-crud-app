@@ -1,21 +1,27 @@
-import React, { useState } from 'react';
+import React from "react";
 import Table from "../../common/Table";
 import { Link } from "react-router-dom";
-import {getColumnNames} from "../../common/PageElementsCreating"
+import { getColumnNames } from "../../common/PageElementsCreating";
+import { useDispatch, useSelector } from "react-redux";
+import {
+    deletePlanet,
+    changeBelovedStatus,
+} from "../../../store/actions/planets";
+import { getAllPlanets } from "../../../store/selectors/planets";
 
-const PlanetsPage = ({data}) => {
+const PlanetsPage = () => {
+    const dispatch = useDispatch();
 
-    if (localStorage.dataPlanets) {
-        data = JSON.parse(localStorage.getItem("dataPlanets"));
-    }
-    const [planets, setPlanets] = useState(data);
+    const planets = useSelector(state => getAllPlanets(state));
 
     const pageName = "Planets";
 
     const handleDelete = (id) => {
-        const filteredPlanets = planets.filter((person) => person.id !== id);
-        setPlanets(filteredPlanets);
-        localStorage.setItem("dataPlanets", JSON.stringify(filteredPlanets));
+        dispatch(deletePlanet(id));
+    };
+
+    const handleBelowedStatus = (id) => {
+        dispatch(changeBelovedStatus(id));
     };
 
     return (
@@ -35,7 +41,11 @@ const PlanetsPage = ({data}) => {
                 New PLanet
             </Link>
             <Table
-                columns={getColumnNames("planets", planets)}
+                columns={getColumnNames(
+                    "planets",
+                    planets,
+                    handleBelowedStatus
+                )}
                 tableDescriptor={pageName}
                 onDelete={handleDelete}
                 data={planets}

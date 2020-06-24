@@ -1,14 +1,21 @@
 import React from "react";
 import Form from "../../common/Form";
 import { planetsColumns } from "../../../services/planetsService";
-import {nanoid} from "nanoid"
+import { nanoid } from "nanoid";
 import { Redirect } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-const planetsForm = ({ location, history }) => {
+import { getAllPlanets } from "../../../store/selectors/planets";
+import { setPlanets } from "../../../store/actions/planets";
+
+const PlanetsForm = ({ location, history }) => {
+    const dispatch = useDispatch();
+    const data = useSelector((state) => getAllPlanets(state));
+
     if (!location.propsSearch) return <Redirect to="/planets" />;
-    
-    const { id, data } = location.propsSearch;
-    
+
+    const { id } = location.propsSearch;
+
     const getInitialPlanetsData = () => {
         return planetsColumns.reduce((cols, columnName) => {
             cols[columnName] = "";
@@ -23,15 +30,15 @@ const planetsForm = ({ location, history }) => {
             } else return element;
         });
 
-        localStorage.setItem("dataPlanets", JSON.stringify(planetsNew));
+        dispatch(setPlanets(planetsNew));
         history.push("/planets");
     };
 
     const handleAppPlanet = (planetData) => {
-        
-        planetData = {...planetData, id: nanoid()}
+        planetData = { ...planetData, id: nanoid() };
         const dataN = [...data, planetData];
-        localStorage.setItem("dataPlanets", JSON.stringify(dataN));
+        
+        dispatch(setPlanets(dataN))
         history.push("/planets");
     };
 
@@ -42,7 +49,7 @@ const planetsForm = ({ location, history }) => {
                 initialData={getInitialPlanetsData()}
                 onSave={handleAppPlanet}
             />
-        )
+        );
     } else {
         return (
             <Form
@@ -54,4 +61,4 @@ const planetsForm = ({ location, history }) => {
     }
 };
 
-export default planetsForm;
+export default PlanetsForm;

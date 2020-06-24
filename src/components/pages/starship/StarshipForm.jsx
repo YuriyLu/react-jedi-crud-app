@@ -3,11 +3,18 @@ import Form from "../../common/Form";
 import { starshipsColumns } from "../../../services/starshipsService";
 import { nanoid } from "nanoid";
 import { Redirect } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import { getAllStarships } from "../../../store/selectors/starships";
+import { setStarships } from "../../../store/actions/starships";
 
 const StarshipsForm = ({ location, history }) => {
+    const dispatch = useDispatch();
+    const data = useSelector((state) => getAllStarships(state));
+
     if (!location.propsSearch) return <Redirect to="/starships" />;
 
-    const { id, data } = location.propsSearch;
+    const { id } = location.propsSearch;
 
     const getInitialStarshipsData = () => {
         return starshipsColumns.reduce((cols, columnName) => {
@@ -23,14 +30,15 @@ const StarshipsForm = ({ location, history }) => {
             } else return element;
         });
 
-        localStorage.setItem("dataStarships", JSON.stringify(starshipsNew));
+        dispatch(setStarships(starshipsNew))
         history.push("/starships");
     };
 
     const handleAppstarship = (starshipData) => {
         starshipData = { ...starshipData, id: nanoid() };
         const dataN = [...data, starshipData];
-        localStorage.setItem("dataStarships", JSON.stringify(dataN));
+
+        dispatch(setStarships(dataN))
         history.push("/starships");
     };
 

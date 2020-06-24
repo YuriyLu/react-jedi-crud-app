@@ -1,22 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
 import Table from "../../common/Table";
 import { Link } from "react-router-dom";
-import {getColumnNames} from "../../common/PageElementsCreating"
+import { getColumnNames } from "../../common/PageElementsCreating";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllStarships } from "../../../store/selectors/starships";
+import { deleteStarship } from "../../../store/actions/starships";
+import { changeBelovedStatus } from "../../../store/actions/starships";
 
-const StarshipsPage = ({ data }) => {
-    if (localStorage.dataStarships) {
-        data = JSON.parse(localStorage.getItem("dataStarships"));
-    }
-    const [starships, setStarships] = useState(data);
+const StarshipsPage = () => {
+    const dispatch = useDispatch();
+
+    const starships = useSelector((state) => getAllStarships(state));
 
     const pageName = "Starships";
 
     const handleDelete = (id) => {
-        const filteredStarships = starships.filter((person) => person.id !== id);
-        setStarships(filteredStarships);
-        localStorage.setItem("dataStarships", JSON.stringify(filteredStarships));
+        dispatch(deleteStarship(id))
     };
 
+    const handleBelowedStatus = (id) => {
+        dispatch(changeBelovedStatus(id));
+    }; 
 
     return (
         <div className="my-container">
@@ -35,7 +39,7 @@ const StarshipsPage = ({ data }) => {
                 New Starship
             </Link>
             <Table
-                columns={getColumnNames("starships", starships)}
+                columns={getColumnNames("starships", starships, handleBelowedStatus)}
                 tableDescriptor={pageName}
                 onDelete={handleDelete}
                 data={starships}

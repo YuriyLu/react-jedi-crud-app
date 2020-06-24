@@ -3,12 +3,18 @@ import Form from "../../common/Form";
 import { peopleColumns } from "../../../services/peopleService";
 import { nanoid } from "nanoid";
 import { Redirect } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
+import { getAllPeople } from "../../../store/selectors/people";
+import { setPeople } from "../../../store/actions/people";
 
 const PeopleForm = ({ location, history }) => {
+    const dispatch = useDispatch();
+    const data = useSelector((state) => getAllPeople(state));
+
     if (!location.propsSearch) return <Redirect to="/" />;
 
-    const { id, data } = location.propsSearch;
+    const { id } = location.propsSearch;
 
     const getInitialPeopleData = () => {
         return peopleColumns.reduce((cols, columnName) => {
@@ -23,15 +29,14 @@ const PeopleForm = ({ location, history }) => {
                 return personData;
             } else return element;
         });
-
-        localStorage.setItem("dataPeople", JSON.stringify(peopleNew));
+        dispatch(setPeople(peopleNew))
         history.push("/");
     };
 
     const handleAppPerson = (personData) => {
         personData = { ...personData, id: nanoid() };
-        const dataN = [...data, personData];
-        localStorage.setItem("dataPeople", JSON.stringify(dataN));
+        const peopleNew = [...data, personData];
+        dispatch(setPeople(peopleNew))
         history.push("/");
     };
 

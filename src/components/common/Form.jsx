@@ -12,7 +12,10 @@ const Form = ({ columns, initialData, onSave }) => {
         event.preventDefault();
         if (validate(itemData)) {
             onSave(itemData);
-        } else return;
+        } else {
+            console.log(validate(itemData))
+            return
+        };
     };
 
     const handleChange = (event) => {
@@ -30,7 +33,7 @@ const Form = ({ columns, initialData, onSave }) => {
         let errors = {};
         let allRight = true;
         Object.entries(data).map(([key, val]) => {
-            if (!val) {
+            if (key !== 'beloved' && !val) {
                 errors = { ...errors, [key]: "Field should not be empty" };
                 allRight = false;
             } else {

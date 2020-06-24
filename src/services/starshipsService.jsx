@@ -39,6 +39,7 @@ export const getStarships = async () => {
             consumables,
             hyperdrive_rating,
             starship_class,
+            beloved: false,
             id: nanoid(),
         })
     );

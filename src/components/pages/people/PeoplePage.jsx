@@ -1,21 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
 import Table from "../../common/Table";
 import { Link } from "react-router-dom";
 import {getColumnNames} from "../../common/PageElementsCreating"
+import { useDispatch, useSelector } from "react-redux";
+import { deletePerson, changeBelovedStatus } from "../../../store/actions/people";
+import { getAllPeople } from "../../../store/selectors/people";
 
-const PeoplePage = ({ data }) => {
-    if (localStorage.dataPeople) {
-        data = JSON.parse(localStorage.getItem("dataPeople"));
-    }
-    const [people, setPeople] = useState(data);
+const PeoplePage = () => {
+    const dispatch = useDispatch();
+    const people = useSelector(state => getAllPeople(state));
 
     const pageName = "People";
 
     const handleDelete = (id) => {
-        const filteredPeople = people.filter((person) => person.id !== id);
-        setPeople(filteredPeople);
-        localStorage.setItem("dataPeople", JSON.stringify(filteredPeople));
+        dispatch(deletePerson(id))
     };
+
+    const handleBelowedStatus = (id) => {
+        dispatch(changeBelovedStatus(id));
+    }
 
 
     return (
@@ -35,7 +38,7 @@ const PeoplePage = ({ data }) => {
                 New Person
             </Link>
             <Table
-                columns={getColumnNames("people", people)}
+                columns={getColumnNames("people", people, handleBelowedStatus)}
                 tableDescriptor={pageName}
                 onDelete={handleDelete}
                 data={people}
